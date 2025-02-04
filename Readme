@@ -34,3 +34,13 @@ Ajout d’un restaurant via main.py :
 main.py crée une session SQLAlchemy pour interagir avec la base.
 Il ajoute un restaurant fictif (Restaurant Exemple, 123 Rue Exemple, Paris).
 Il commit ensuite les modifications pour enregistrer le restaurant dans la base de données.
+
+*NOUR date: 04/02
+
+fichier style.css: pas encore fait entièrement.
+fichier index.html: pas encrore fini et pofiné.
+fichier app.py: j'ai fait les routes mtn il faut :
+Tester avec des valeurs valides et invalides.
+Regarder la réponse JSON retournée.
+Gérer les erreurs avec des messages clairs (400 Bad Request).
+Tu peut tester tout ça en installant l'application Postman.
