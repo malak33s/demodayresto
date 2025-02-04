@@ -1,1 +1,36 @@
-Ce repo consistera a stocker notre projet demoday
+Recap 3 et 4 janvier 
+ Récapitulatif de mes fichiers et leur rôle
+Je travaille sur demodayresto, un projet de site de réservation de plats tunisiens. Actuellement, je met en place la connexion entre mon  application et ma base de données MySQL avec SQLAlchemy.
+
+1️ Fichiers et leur utilité
+ db_connection.py
+- Gère la connexion à la base de données via SQLAlchemy.
+
+Il établit un lien avec MySQL en utilisant l’ORM SQLAlchemy.
+Il crée une session pour interagir avec la base.
+ models.py
+- Définit les modèles de données.
+
+*main.py
+
+
+Ce que j'ai fait jusqu'à présent :
+Création de la base de données et de l’utilisateur MySQL :
+
+J'ai créé un utilisateur demodayresto pour MySQL.
+J'ai créé une base de données demoday_db (le mdp est mot_de_passe avec maj ou sans jsplus).
+J'ai vérifié que mon utilisateur existe et que la base de données est bien là.
+Connexion à la base avec SQLAlchemy :
+
+J'ai créé un fichier db_connection.py qui établit une connexion avec ma base MySQL via SQLAlchemy.
+J'ai corrigé un avertissement lié à SQLAlchemy 2.0 en remplaçant declarative_base() par sqlalchemy.orm.declarative_base().
+J'ai testé la connexion et elle fonctionne sans erreur.
+Modélisation des données avec SQLAlchemy (ORM) :
+
+J'ai un fichier models.py qui définit un modèle Resto représentant un restaurant avec au moins un nom et une addresse.
+Ce modèle est utilisé pour interagir avec la base de données sans écrire directement du SQL.
+Ajout d’un restaurant via main.py :
+
+main.py crée une session SQLAlchemy pour interagir avec la base.
+Il ajoute un restaurant fictif (Restaurant Exemple, 123 Rue Exemple, Paris).
+Il commit ensuite les modifications pour enregistrer le restaurant dans la base de données.
