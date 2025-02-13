@@ -1,21 +1,17 @@
 from sqlalchemy import Column, Integer, String, DateTime
-from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
+from db_connection import Base  # Assure-toi que Base est importé depuis db_connection
 
-Base = declarative_base()
+class Reservation(Base):
+    __tablename__ = 'reservations'
 
-class Resto(Base):
-    __tablename__ = 'restos'  # Nom de la table dans la base de données
     id = Column(Integer, primary_key=True)
-    name = Column(String(100))
-    address = Column(String(255))
-    created_at = Column(DateTime, default=datetime.now)  # Valeur par défaut pour l'heure de création
+    nom = Column(String(100), nullable=False)
+    date = Column(String(100), nullable=False)  # Tu peux aussi utiliser Date si tu préfères stocker une vraie date
+    horaire = Column(String(5), nullable=False)  # Horaire en format HH:MM
+    nombre_couverts = Column(Integer, nullable=False)
+    code_reservation = Column(String(10), nullable=False, unique=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
 
-# Si tu veux créer des tables dans ta base de données, voici comment procéder :
-from sqlalchemy import create_engine
-
-# Remplace par les mêmes infos de connexion que dans db_connection.py
-engine = create_engine(f'mysql+mysqlclient://root:ton_mot_de_passe@localhost/nom_de_ta_base_de_donnees')
-
-# Créer toutes les tables définies dans les modèles
-Base.metadata.create_all(engine)
+    def __repr__(self):
+        return f"<Reservation(id={self.id}, nom={self.nom}, date={self.date}, horaire={self.horaire}, couverts={self.nombre_couverts}, code={self.code_reservation})>"

@@ -1,21 +1,16 @@
-from sqlalchemy import create_engine, Column, Integer, String
-from sqlalchemy.orm import declarative_base
-from sqlalchemy.orm import sessionmaker
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
 
-# Connexion à la base de données MySQL
-engine = create_engine("mysql+mysqldb://demodayresto:mot_de_passe@localhost/demoday_db")
+# Configuration de l'application Flask
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///reservations.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# Créer une session
-Session = sessionmaker(bind=engine)
-session = Session()
+# Initialisation de SQLAlchemy
+db = SQLAlchemy(app)
 
-# Base pour déclarer les classes ORM
-Base = declarative_base()
+# Utiliser un contexte d'application pour créer l'engine
+with app.app_context():
+    engine = db.engine
 
-# Exemple de classe pour une table
-class TableExample(Base):
-    __tablename__ = 'example_table'
-    id = Column(Integer, primary_key=True)
-    name = Column(String(50))
-# Créer les tables
-Base.metadata.create_all(engine)
+Base = db.Model

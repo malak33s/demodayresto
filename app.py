@@ -1,158 +1,112 @@
 from flask import Flask, jsonify, request
-from flask_sqlalchemy import SQLAlchemy
+from db_connection import db, engine
+from models import Reservation
+from flask_migrate import Migrate
+import random  # Pour générer le code de réservation
+from datetime import datetime, timedelta
 
+# Créez l'application Flask
 app = Flask(__name__)
 
-# Configuration de la base de données (utilisation de SQLite pour simplifier)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///resto.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+# Configuration de la base de données
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///reservations.db'  # Changez si nécessaire
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # Pour éviter un avertissement
 
 # Initialisation de SQLAlchemy
-db = SQLAlchemy(app)
+db.init_app(app)
 
-# Définition des modèles
-
-class Reservation(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    nom = db.Column(db.String(100), nullable=False)
-    date = db.Column(db.String(100), nullable=False)
-    nombre_personnes = db.Column(db.Integer, nullable=False)
-    numero_table = db.Column(db.Integer, nullable=False)
-
-    def __repr__(self):
-        return f"Reservation('{self.id}', '{self.nom}', '{self.date}', '{self.nombre_personnes}', '{self.numero_table}')"
-
-class Commande(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    nom_plat = db.Column(db.String(100), nullable=False)
-    quantite = db.Column(db.Integer, nullable=False)
-    numero_table = db.Column(db.Integer, nullable=False)
-
-    def __repr__(self):
-        return f"Commande('{self.id}', '{self.nom_plat}', '{self.quantite}', '{self.numero_table}')"
+# Initialisation de Flask-Migrate
+migrate = Migrate(app, db)
 
 # Créer les tables dans la base de données
 with app.app_context():
     db.create_all()
 
-# Routes de l'API
+# Nombre total de couverts disponibles
+TOTAL_COUVERTS_DISPONIBLES = 50
 
-@app.route('/menu', methods=['GET'])
-def obtenir_menu():
-    menu = [
-        {"id": 1, "nom": "Couscous", "prix": 10.0},
-        {"id": 2, "nom": "Brik", "prix": 5.0},
-        {"id": 3, "nom": "Pâtisserie", "prix": 3.0}
-    ]
-    return jsonify(menu)
+# Définition des horaires par jour
+HORAIRES_PAR_JOUR = {
+    "lundi": [("12:00", "14:30"), ("19:00", "22:30")],
+    "mardi": [("12:00", "14:30"), ("19:00", "22:30")],
+    "mercredi": [("12:00", "14:30"), ("19:00", "22:30")],
+    "jeudi": [("12:00", "14:30"), ("19:00", "22:30")],
+    "vendredi": [("12:00", "14:30"), ("19:00", "22:30")],
+    "samedi": [("12:00", "15:00"), ("19:00", "23:00")],
+    "dimanche": []  # Fermé
+}
 
-@app.route('/reserverTable', methods=['POST'])
+@app.route('/horaires-disponibles', methods=['GET'])
+def horaires_disponibles():
+    date = request.args.get('date')
+    if not date:
+        return jsonify({"message": "La date est requise"}), 400
+
+    jour_semaine = datetime.strptime(date, "%Y-%m-%d").strftime("%A").lower()
+    if jour_semaine not in HORAIRES_PAR_JOUR or not HORAIRES_PAR_JOUR[jour_semaine]:
+        return jsonify({"message": "Le restaurant est fermé ce jour-là"}), 400
+
+    horaires_possibles = []
+    for debut, fin in HORAIRES_PAR_JOUR[jour_semaine]:
+        heure_actuelle = datetime.strptime(debut, "%H:%M")
+        heure_fin = datetime.strptime(fin, "%H:%M")
+        while heure_actuelle < heure_fin:
+            horaire_str = heure_actuelle.strftime("%H:%M")
+            couverts_reserves = sum(res.nombre_couverts for res in db.session.query(Reservation).filter_by(date=date, horaire=horaire_str))
+            places_restantes = TOTAL_COUVERTS_DISPONIBLES - couverts_reserves
+            if places_restantes > 0:
+                horaires_possibles.append({"horaire": horaire_str, "places_restantes": places_restantes})
+            heure_actuelle += timedelta(minutes=30)
+
+    return jsonify(horaires_possibles)
+
+@app.route('/reservations', methods=['POST'])
 def reserver_table():
-    data = request.get_json()  # Récupère les données envoyées en JSON
+    """Créer une nouvelle réservation en vérifiant la disponibilité et l'horaire."""
+    data = request.get_json()
 
-    # Récupérer les informations du body de la requête
     nom = data.get('nom')
     date = data.get('date')
-    nombre_personnes = data.get('nombre_personnes')
-    numero_table = data.get('numero_table')
+    horaire = data.get('horaire')
+    nombre_couverts = data.get('nombre_couverts')
 
-    # Créer une nouvelle réservation
+    if not nom or not date or not horaire or not nombre_couverts:
+        return jsonify({"message": "Tous les champs sont requis (nom, date, horaire, nombre_couverts)"}), 400
+
+    jour_semaine = datetime.strptime(date, "%Y-%m-%d").strftime("%A").lower()
+    if jour_semaine not in HORAIRES_PAR_JOUR or not any(debut <= horaire <= fin for debut, fin in HORAIRES_PAR_JOUR[jour_semaine]):
+        return jsonify({"message": "Horaire non disponible"}), 400
+
+    # Vérifier le nombre de couverts déjà réservés à cette date et cet horaire
+    couverts_reserves = db.session.query(Reservation).filter_by(date=date, horaire=horaire).all()
+    total_reserves = sum(res.nombre_couverts for res in couverts_reserves)
+
+    if total_reserves + nombre_couverts > TOTAL_COUVERTS_DISPONIBLES:
+        return jsonify({"message": "Nombre de couverts insuffisant pour cette date et cet horaire"}), 400
+
+    # Générer un code de réservation unique
+    nouveau_code = str(random.randint(1000, 9999))
+
+    # Créer la réservation
     nouvelle_reservation = Reservation(
         nom=nom,
         date=date,
-        nombre_personnes=nombre_personnes,
-        numero_table=numero_table
+        horaire=horaire,
+        nombre_couverts=nombre_couverts,
+        code_reservation=nouveau_code
     )
 
-    # Ajouter et valider la réservation
     db.session.add(nouvelle_reservation)
     db.session.commit()
 
-    return jsonify({"message": "Réservation ajoutée avec succès !"}), 201
+    return jsonify({"message": "Réservation effectuée", "code_reservation": nouveau_code}), 201
 
-@app.route('/commander', methods=['POST'])
-def passer_commande():
-    data = request.get_json()  # Récupère les données envoyées en JSON
-
-    # Récupérer les informations du body de la requête
-    nom_plat = data.get('nom_plat')
-    quantite = data.get('quantite')
-    numero_table = data.get('numero_table')
-
-    # Créer une nouvelle commande
-    nouvelle_commande = Commande(
-        nom_plat=nom_plat,
-        quantite=quantite,
-        numero_table=numero_table
-    )
-
-    # Ajouter et valider la commande
-    db.session.add(nouvelle_commande)
-    db.session.commit()
-
-    return jsonify({"message": "Commande ajoutée avec succès !"}), 201
-
-@app.route('/annulerReservation', methods=['DELETE'])
-def annuler_reservation():
-    data = request.get_json()
-    reservation_id = data.get('id')
-
-    reservation = Reservation.query.get(reservation_id)
-    if reservation:
-        db.session.delete(reservation)
-        db.session.commit()
-        return jsonify({"message": "Réservation annulée avec succès !"}), 200
-    else:
-        return jsonify({"message": "Réservation non trouvée"}), 404
-
-@app.route('/modifierReservation', methods=['PUT'])
-def modifier_reservation():
-    data = request.get_json()
-    reservation_id = data.get('id')
-    nouvelle_date = data.get('date')
-    nouveau_nombre_personnes = data.get('nombre_personnes')
-    nouveau_numero_table = data.get('numero_table')
-
-    reservation = Reservation.query.get(reservation_id)
-    if reservation:
-        reservation.date = nouvelle_date
-        reservation.nombre_personnes = nouveau_nombre_personnes
-        reservation.numero_table = nouveau_numero_table
-        db.session.commit()
-        return jsonify({"message": "Réservation modifiée avec succès !"}), 200
-    else:
-        return jsonify({"message": "Réservation non trouvée"}), 404
-
-@app.route('/annulerCommande', methods=['DELETE'])
-def annuler_commande():
-    data = request.get_json()
-    commande_id = data.get('id')
-
-    commande = Commande.query.get(commande_id)
-    if commande:
-        db.session.delete(commande)
-        db.session.commit()
-        return jsonify({"message": "Commande annulée avec succès !"}), 200
-    else:
-        return jsonify({"message": "Commande non trouvée"}), 404
-
-@app.route('/modifierCommande', methods=['PUT'])
-def modifier_commande():
-    data = request.get_json()
-    commande_id = data.get('id')
-    nouveau_nom_plat = data.get('nom_plat')
-    nouvelle_quantite = data.get('quantite')
-    nouveau_numero_table = data.get('numero_table')
-
-    commande = Commande.query.get(commande_id)
-    if commande:
-        commande.nom_plat = nouveau_nom_plat
-        commande.quantite = nouvelle_quantite
-        commande.numero_table = nouveau_numero_table
-        db.session.commit()
-        return jsonify({"message": "Commande modifiée avec succès !"}), 200
-    else:
-        return jsonify({"message": "Commande non trouvée"}), 404
+@app.route('/reservations', methods=['GET'])
+def get_reservations():
+    """Obtenir toutes les réservations"""
+    reservations = db.session.query(Reservation).all()
+    result = [{"nom": res.nom, "date": res.date, "horaire": res.horaire, "nombre_couverts": res.nombre_couverts, "code": res.code_reservation} for res in reservations]
+    return jsonify(result)
 
 if __name__ == '__main__':
     app.run(debug=True)
