@@ -1,0 +1,159 @@
+/* Importation de la police */
+@import url('https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@700&display=swap');
+
+/* Styles généraux */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    color: white;
+    width: 100%;
+    overflow-x: hidden;
+    background-color: white !important; /* Assure que le fond est blanc partout */
+}
+
+html, body {
+    background: white !important;
+    width: 100vw;
+    height: 100vh
+}
+
+/* En-tête */
+header {
+    display: flex;
+    justify-content: center; /* Centre horizontalement */
+    align-items: center; /* Centre verticalement */
+    height: 90px; /* Ajuste la hauteur de l’en-tête */
+    text-align: center;
+}
+
+h1.restaurant-title {
+    font-family: 'Aref Ruqaa', serif;
+    font-size: 3rem;
+    color: #51aff7;
+    margin: 0;
+}
+
+/* Section Hero */
+.container {
+    position: relative;
+    text-align: center;
+}
+
+.hero {
+    background: url('./image_2.jpeg') no-repeat center center; /* Correction */
+    background-size: cover;
+    background-attachment: fixed;
+    min-height: 100vh;
+    width: 100vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+h1 {
+    font-family: 'Marck Script', cursive;
+    font-size: 3rem;
+    color: #51aff7;
+    margin: 20px 0;
+}
+
+/* Boutons */
+.buttons {
+    margin-bottom: 20px;
+    text-align: center; /* Corrige le problème de centrage */
+}
+
+.btn {
+    background-color: #51aff7;
+    color: white;
+    padding: 12px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 1.2rem;
+    margin: 20px;
+    transition: background 0.3s;
+    border: none;
+    cursor: pointer;
+    display: inline-block; /* Assure que les boutons ne prennent pas toute la largeur */
+}
+
+.btn:hover {
+    background-color: #3a92d1;
+}
+
+/* Informations */
+.infos {
+    background: rgba(81, 175, 247, 0.9);
+    padding: 15px;
+    border-radius: 10px;
+    font-size: 16px;
+    width: 90%;
+    max-width: 400px;
+    margin: 40px auto 0 auto; /* Centre horizontalement */
+    text-align: center;
+}
+
+/* Pied de page */
+footer {
+    margin-top: 0px;
+    font-size: 1rem;
+    background: white !important; /* Force le blanc */
+    padding: 3px;
+    color: black;
+    text-align: center;
+    position: relative; /* Évite les superpositions */
+    z-index: 10;
+}
+
+/* Suppression des marges ou padding indésirables */
+footer::before,
+footer::after {
+    content: "";
+    display: none;
+}
+
+/* Assurer que le footer est bien blanc et pas d'éléments parasites */
+footer, footer * {
+    background-color: white !important;
+}
+
+footer a {
+    color: black !important; /* Texte noir */
+    text-decoration: none; /* Supprime le soulignement */
+    font-weight: bold;
+}
+
+footer a:hover {
+    color: #51aff7 !important; /* Bleu au survol */
+}
+
+/* SCROLL BAR */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background-color: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 10px;
+
+}

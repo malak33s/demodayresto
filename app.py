@@ -6,6 +6,7 @@ import random
 import datetime
 import locale
 
+
 # Définir locale en français pour obtenir les jours correctement
 locale.setlocale(locale.LC_TIME, "fr_FR.UTF-8")
 
@@ -73,23 +74,26 @@ def reserver_table():
     jour = obtenir_jour_semaine(date)
     horaires_jour = HORAIRES_RESTAURANT.get(jour, [])
 
-    # Générer tous les créneaux valides (30 min d'intervalle)
+    # Générer tous les créneaux valides (1 minute d'intervalle)
     horaires_valides = []
     for debut, fin in horaires_jour:
         heure_actuelle = datetime.datetime.strptime(debut, "%H:%M")
         fin_horaire = datetime.datetime.strptime(fin, "%H:%M")
         while heure_actuelle <= fin_horaire:
             horaires_valides.append(heure_actuelle.strftime("%H:%M"))
-            heure_actuelle += datetime.timedelta(minutes=30)
+            heure_actuelle += datetime.timedelta(minutes=1)
+            
+    if nombre_couverts <= 0:
+        return jsonify({"message": "Nombre de couverts invalide"}), 400
 
     if horaire not in horaires_valides:
-        return jsonify({"message": "Horaire non disponible"}), 400
+        return jsonify({"message": "Restaurant fermé"}), 400
     
     couverts_reserves = db.session.query(Reservation).filter_by(date=date, horaire=horaire).all()
     total_reserves = sum(res.nombre_couverts for res in couverts_reserves)
     
     if total_reserves + nombre_couverts > TOTAL_COUVERTS_DISPONIBLES:
-        return jsonify({"message": "Nombre de couverts insuffisant pour cette date et cet horaire"}), 400
+        return jsonify({"message": "Nombre de couverts non disponible"}), 400
     
     nouveau_code = str(random.randint(1000, 9999))
     

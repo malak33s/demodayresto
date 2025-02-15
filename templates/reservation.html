@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Réservation - La Table de Carthage</title>
+    <link rel="stylesheet" href="../static/css/reservation.css">
+</head>
+<body>
+    <header>
+        <h1 class="restaurant-title">La Table de Carthage</h1>
+        <nav>
+            <a href="index.html" class="btn">Accueil</a>
+            <a href="chemin/vers/ta-carte.pdf" class="btn" download>Notre carte</a>
+            <a href="commander.html" class="btn">À emporter</a>
+        </nav>
+    </header>
+    
+    <div class="container">
+        <div class="right-section">
+            <h2>Réservation</h2>
+            <form id="reservationForm">
+                <label for="customer_name">Nom :</label>
+                <input type="text" id="customer_name" name="customer_name" required>
+                
+                <label for="date">Date de réservation :</label>
+                <input type="date" id="date" name="date" required>
+                
+                <label for="heure">Heure de réservation :</label>
+                <input type="time" id="heure" name="heure" required>
+                
+                <label for="couverts">Nombre de couverts :</label>
+                <input type="number" id="couverts" name="couverts" required>
+                
+                <button type="submit" class="btn">Valider votre réservation</button>
+            </form>
+            
+            <p id="confirmation"></p>
+        </div>
+    </div>
+
+    <footer>
+        <p><a href="#">Mentions légales</a></p>
+        <p><a href="#">© 2025 La Table de Carthage - Tous droits réservés.</a></p>
+    </footer>
+
+    <script>
+        document.getElementById('reservationForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const customer_name = document.getElementById('customer_name').value;
+            const date = document.getElementById('date').value;
+            const heure = document.getElementById('heure').value;
+            const couverts = document.getElementById('couverts').value;
+            const confirmation = document.getElementById('confirmation');
+
+            fetch('http://127.0.0.1:5000/reservations', { // ✅ Endpoint corrigé
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    nom: customer_name, // ✅ Correction des champs
+                    date: date,
+                    horaire: heure,
+                    nombre_couverts: parseInt(couverts) // ✅ Convertir en nombre
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                if (data.code_reservation) {
+                    confirmation.innerHTML = `<span style="color:green;">Réservation confirmée ! Code : ${data.code_reservation}</span>`;
+                } else {
+                    confirmation.innerHTML = `<span style="color:red;">Erreur : ${data.message || "Problème inconnu"}</span>`;
+                }
+            })
+            .catch(error => {
+                confirmation.innerHTML = `<span style="color:red;">Erreur : ${error.message}</span>`;
+            });
+        });
+    </script>
+</body>
+</html>

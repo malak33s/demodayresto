@@ -1,0 +1,183 @@
+@import url('https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@700&display=swap');
+
+body {
+    background: url('./image_2.jpeg') center/cover no-repeat fixed;
+    position: relative;
+}
+
+/* Assombrit légèrement l'arrière-plan pour un meilleur contraste */
+body::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.2);
+    z-index: -1;
+}
+
+/* le HEADER */
+header {
+    background: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    height: 90px;
+}
+
+h1.restaurant-title {
+    font-family: 'Aref Ruqaa', serif;
+    font-size: 3rem;
+    color: #51aff7;
+}
+
+/* Liens dans le header */
+header nav a {
+    text-decoration: none; /* Enlever le soulignement */
+    color: #51aff7; /* Couleur du texte */
+    font-weight: bold;
+    margin: 0 10px;
+}
+
+header nav a:hover {
+    color: #3a92d1; /* Couleur au survol */
+    text-decoration: none; /* Assurer que le soulignement ne réapparaît pas */
+}
+
+/* CONTENEUR */
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+/* FORMULAIRE */
+.right-section {
+    background: rgba(81, 175, 247, 0.9);
+    padding: 15px; /* Réduire le padding */
+    border-radius: 10px;
+    text-align: left; /* Aligner le texte à gauche */
+    width: 50%; /* Réduire la largeur du formulaire */
+    max-width: 400px; /* Limiter la largeur maximale */
+}
+
+.right-section h2 {
+    font-size: 1.2rem; /* Réduire la taille de la police */
+    margin-bottom: 10px; /* Réduire l'espace en bas */
+}
+
+/* Agrandissement de la police des labels pour "Date", "Heure de réservation" et "Nombre de couverts" */
+.right-section label {
+    font-size: 17px;  /* Réduire la taille de la police */
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+    text-align: left; /* Aligner le texte à gauche */
+}
+
+/* Agrandir la police et améliorer l'apparence des champs */
+.right-section input[type="date"],
+.right-section input[type="time"],
+.right-section input[type="number"],
+.right-section input[type="text"] {
+    font-size: 17px; /* Réduire la taille de la police */
+    padding: 8px; /* Réduire le padding */
+    width: 96%;
+    border-radius: 5px;
+    border: none;
+    margin-bottom: 8px; /* Réduire l'espace en bas */
+    text-align: left; /* Aligner le texte à gauche */
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* Amélioration des autres champs et boutons */
+.right-section input,
+.right-section select {
+    font-size: 17px; /* Réduire la taille de la police */
+    padding: 8px; /* Réduire le padding */
+    width: 100%;
+    margin: 8px 0; /* Réduire l'espace en haut et en bas */
+    border-radius: 5px;
+    border: none;
+    text-align: left; /* Aligner le texte à gauche */
+}
+
+/* Centrer le bouton */
+.right-section button {
+    font-size: 17px; /* Réduire la taille de la police */
+    padding: 8px; /* Réduire le padding */
+    width: 100%;
+    margin: 8px 0; /* Réduire l'espace en haut et en bas */
+    border-radius: 5px;
+    border: none;
+    text-align: center; /* Centrer le texte dans le bouton */
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Boutons */
+.btn {
+    background-color: #51aff7;
+    color: white;
+    padding: 10px; /* Réduire le padding */
+    border-radius: 5px;
+    cursor: pointer;
+    border: none;
+    font-size: 1.2rem; /* Réduire la taille de la police */
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.btn:hover {
+    background-color: #3a92d1;
+    color: white; /* Assurer que le texte reste visible au survol */
+}
+
+/* Liens */
+.download-link {
+    font-size: 1rem; /* Réduire la taille de la police */
+    color: white;
+    display: block;
+    margin-bottom: 15px;
+}
+
+/* Pied de page */
+footer {
+    margin-top: 0px;
+    font-size: 1rem;
+    background: white !important; /* Force le blanc */
+    padding: 3px;
+    color: black;
+    text-align: center;
+    position: relative; /* Évite les superpositions */
+    z-index: 10;
+}
+
+/* Suppression des marges ou padding indésirables */
+footer::before,
+footer::after {
+    content: "";
+    display: none;
+}
+
+/* Assurer que le footer est bien blanc et pas d'éléments parasites */
+footer, footer * {
+    background-color: white !important;
+}
+
+footer a {
+    color: black !important; /* Texte noir */
+    text-decoration: none; /* Supprime le soulignement */
+    font-weight: bold;
+}
+
+footer a:hover {
+    color: #51aff7 !important; /* Bleu au survol */
+}
