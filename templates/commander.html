@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Commander - La Table de Carthage</title>
+    <link rel="stylesheet" href="../static/css/commander.css">
+    <link rel="stylesheet" href="../static/css/sidebar.css">
+</head>
+<body>
+    <header>
+        <h1 class="restaurant-title">La Table de Carthage</h1>
+        <nav>
+            <a href="index.html" class="btn">Accueil</a>
+            <a href="index.html" class="btn">Réservation</a>
+        </nav>
+    </header>
+    <div class="container">
+        <aside class="sidebar">
+            <nav>
+                <ul>
+                    <li><a href="#" class="menu-link" data-target="Entrées">Entrées</a></li>
+                    <li><a href="#" class="menu-link" data-target="Plats">Plats</a></li>
+                    <li><a href="#" class="menu-link" data-target="Desserts">Desserts</a></li>
+                    <li><a href="#" class="menu-link" data-target="Boissons">Boissons</a></li>
+                    <li><a href="#" class="menu-link" data-target="Boissons-chaudes">Boissons chaudes</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <div class="right-section">
+            <!-- ENTRÉES -->
+            <section id="Entrées" class="menu-section">
+                <div class="menu-item" data-preparation-time="20">
+                    <img src="../static/css/img_entrees/brik.webp" alt="Brick">
+                    <p>Brick</p>
+                    <p>Brick garnie d'un œuf coulant, de thon, de persil et d'épices.</p>
+                    <p>2,90€</p>
+                    <button class="btn commander-btn" data-item="Brick" data-price="2,90€">Commander</button>
+                </div>
+                <div class="menu-item" data-preparation-time="15">
+                    <img src="../static/css/img_entrees/slata_mechouia.jpg" alt="Slata Méchouia">
+                    <p>Slata Méchouia</p>
+                    <p>Salade de légumes grillés (poivrons, tomates, ail) assaisonnée à l'huile d'olive et au citron.</p>
+                    <p>3,50€</p>
+                    <button class="btn commander-btn" data-item="Slata Méchouia" data-price="3,50€">Commander</button>
+                </div>
+                <div class="menu-item" data-preparation-time="10">
+                    <img src="../static/css/img_entrees/fricasses.webp" alt="Fricassée">
+                    <p>Fricassée</p>
+                    <p>Petite brioche frite farcie de thon, pomme de terre, harissa et olives.</p>
+                    <p>1,90€</p>
+                    <button class="btn commander-btn" data-item="Fricassée" data-price="1,90€">Commander</button>
+                </div>
+            </section>
+
+            <!-- PLATS -->
+            <section id="Plats" class="menu-section">
+                <div class="menu-item" data-preparation-time="20">
+                    <img src="../static/css/img_plats/chakchouka.jpg" alt="Chakchouka">
+                    <p>Chakchouka</p>
+                    <p>Plat à base de tomates, poivrons et œufs, assaisonné avec des épices.</p>
+                    <p>10,90€</p>
+                    <button class="btn commander-btn" data-item="Chakchouka" data-price="10,90€">Commander</button>
+                </div>
+                <div class="menu-item" data-preparation-time="40">
+                    <img src="../static/css/img_plats/couscous-viande.jpg" alt="Couscous">
+                    <p>Couscous Tunisien</p>
+                    <p>Semoule accompagnée de légumes et de viande d'agneau ou de poulet.</p>
+                    <p>16,50€</p>
+                    <button class="btn commander-btn" data-item="Couscous" data-price="16,50€">Commander</button>
+                </div>
+                <div class="menu-item" data-preparation-time="25">
+                    <img src="../static/css/img_plats/nwasser.jpg" alt="Nwasser">
+                    <p>Nwasser</p>
+                    <p>Pâtes fines, servies avec une sauce tomate épicée avec du poulet.</p>
+                    <p>12,90€</p>
+                    <button class="btn commander-btn" data-item="Nwasser" data-price="12,90€">Commander</button>
+                </div>
+                <div class="menu-item" data-preparation-time="30">
+                    <img src="../static/css/img_plats/riz_djerbien.jpg" alt="Riz Djerbien">
+                    <p>Riz Djerbien</p>
+                    <p>Riz parfumé aux épices, accompagné de viande de veau, légumes et pois chiches.</p>
+                    <p>13,90€</p>
+                    <button class="btn commander-btn" data-item="Riz Djerbien" data-price="13,90€">Commander</button>
+                </div>
+            </section>
+
+            <!-- DESSERTS -->
+            <section id="Desserts" class="menu-section">
+                <div class="menu-item" data-preparation-time="15">
+                    <img src="../static/css/img_desserts/makrouts.jpeg" alt="Makrout">
+                    <p>Makrout</p>
+                    <p>Pâtisserie à base de semoule, fourrée aux dattes et enrobée de miel.</p>
+                    <p>2,90€</p>
+                    <button class="btn commander-btn" data-item="Makrout" data-price="2,90€">Commander</button>
+                </div>
+                <div class="menu-item" data-preparation-time="10">
+                    <img src="../static/css/img_desserts/Baklawa-tunisienne.jpg" alt="Baklawa">
+                    <p>Baklawa</p>
+                    <p>Pâtisserie feuilletée aux amandes et pistaches, enrobée de miel.</p>
+                    <p>3,90€</p>
+                    <button class="btn commander-btn" data-item="Baklawa" data-price="3,90€">Commander</button>
+                </div>
+                <div class="menu-item" data-preparation-time="10">
+                    <img src="../static/css/img_desserts/zrir.jpg" alt="Zrir">
+                    <p>Zrir</p>
+                    <p>Mélange de graines de sésame, d'amandes et de miel.</p>
+                    <p>2,90€</p>
+                    <button class="btn commander-btn" data-item="Zrir" data-price="2,90€">Commander</button>
+                </div>
+            </section>
+
+            <!-- BOISSONS -->
+            <section id="Boissons" class="menu-section">
+                <div class="menu-item" data-preparation-time="5" data-stock="10">
+                    <img src="../static/css/img_boissons/coca_cola.jpg" alt="Coca Cola Original">
+                    <p>Coca Cola Original</p>
+                    <p>2€</p>
+                    <button class="btn commander-btn" data-item="Coca Cola Original" data-price="2€">Commander</button>
+                </div>
+                <div class="menu-item" data-preparation-time="5" data-stock="10">
+                    <img src="../static/css/img_boissons/coca-cola-cherry.webp" alt="Coca Cola Cherry">
+                    <p>Coca Cola Cherry</p>
+                    <p>2€</p>
+                    <button class="btn commander-btn" data-item="Coca Cola Cherry" data-price="2€">Commander</button>
+                </div>
+                <div class="menu-item" data-preparation-time="5" data-stock="10">
+                    <img src="../static/css/img_boissons/coca_zero.jpg" alt="Coca Cola Zero">
+                    <p>Coca Cola Zero</p>
+                    <p>2€</p>
+                    <button class="btn commander-btn" data-item="Coca Cola Zero" data-price="2€">Commander</button>
+                </div>
+                <div class="menu-item" data-preparation-time="5" data-stock="10">
+                    <img src="../static/css/img_boissons/ice_pome_cassis.jpg" alt="Oasis goût pomme cassis">
+                    <p>Oasis goût pomme cassis framboise</p>
+                    <p>2€</p>
+                    <button class="btn commander-btn" data-item="Oasis goût pomme cassis" data-price="2€">Commander</button>
+                </div>
+                <div class="menu-item" data-preparation-time="5" data-stock="10">
+                    <img src="../static/css/img_boissons/oasis-tropical-canette-33cl.webp" alt="Oasis goût tropical">
+                    <p>Oasis goût tropical</p>
+                    <p>2€</p>
+                    <button class="btn commander-btn" data-item="Oasis goût tropical" data-price="2€">Commander</button>
+                </div>
+                <div class="menu-item" data-preparation-time="2">
+                    <img src="../static/css/img_boissons/lipton-icetea-33cl_peche.jpg" alt="Lipton Ice tea goût pêche">
+                    <p>Lipton Ice tea goût pêche</p>
+                    <p>2€</p>
+                    <button class="btn commander-btn" data-item="Lipton Ice tea goût pêche" data-price="2€">Commander</button>
+                </div>
+                <div class="menu-item" data-preparation-time="2">
+                    <img src="../static/css/img_boissons/ice-tea-framboise-33cl.jpg" alt="Ice tea framboise">
+                    <p>Lipton Ice tea goût framboise</p>
+                    <p>2€</p>
+                    <button class="btn commander-btn" data-item="Lipton Ice tea goût framboise" data-price="2€">Commander</button>
+                </div>
+                <div class="menu-item" data-preparation-time="2">
+                    <img src="../static/css/img_boissons/perrier.jpg" alt="Perrier">
+                    <p>Eau gazeuse Perrier</p>
+                    <p>2€</p>
+                    <button class="btn commander-btn" data-item="Eau gazeuse Perrier" data-price="2€">Commander</button>
+                </div>
+                <div class="menu-item" data-preparation-time="1,5">
+                    <img src="../static/css/img_boissons/eau-plate-des-abatilles.webp" alt="Eau plate Abatilles">
+                    <p>Eau plate Abatilles</p>
+                    <p>1,50€</p>
+                    <button class="btn commander-btn" data-item="Eau plate Abatilles" data-price="1,50€">Commander</button>
+                </div>
+            </section>
+
+            <!-- BOISSONS CHAUDES -->
+            <section id="Boissons-chaudes" class="menu-section">
+                <div class="menu-item" data-preparation-time="5">
+                    <img src="../static/css/img_boissons_chaudes/the-pignons-tunisie-1200x800.jpg" alt="Thé rouge tunisien">
+                    <p>Thé rouge tunisien</p>
+                    <p>Thé noir infusé avec de la menthe fraîche et du sucre, parfois agrémenté de pignons pour une touche gourmande.</p>
+                    <p>2.50€</p>
+                    <button class="btn commander-btn" data-item="Thé rouge tunisien" data-price="2.50">Commander</button>
+                </div>
+                <div class="menu-item" data-preparation-time="5">
+                    <img src="../static/css/img_boissons_chaudes/café-arabe.jpg" alt="Café arabe">
+                    <p>Café arabe</p>
+                    <p>Café noir infusé avec des grains moulus et parfumé à la fleur d’oranger ou à la cardamome.</p>
+                    <p>2.50€</p>
+                    <button class="btn commander-btn" data-item="Café arabe" data-price="2.50">Commander</button>
+                </div>
+                <div class="menu-item" data-preparation-time="5">
+                    <img src="../static/css/img_boissons_chaudes/espresso.jpg" alt="Espresso">
+                    <p>Espresso</p>
+                    <p>Café court et corsé.</p>
+                    <p>2.50€</p>
+                    <button class="btn commander-btn" data-item="Espresso" data-price="2.50">Commander</button>
+                </div>
+            </section>
+
+            <!-- PANIER -->
+            <section id="panier">
+                <h2>Mon Panier</h2>
+                <ul id="cart-items"></ul>
+                <p>Total: <span id="cart-total">0.00</span>€</p>
+                <button id="clear-cart" class="btn">Vider le Panier</button>
+            </section>
+        </div>
+    </div>
+    <script>
+    // Gestion de navigation pour le menu
+    document.querySelectorAll('.menu-link').forEach(link => {
+        link.addEventListener('click', function(event) {
+            event.preventDefault();
+            let targetSection = this.getAttribute('data-target');
+            // Masquer les sections avant d'afficher la bonne
+            document.querySelectorAll('.menu-section').forEach(section => {
+                section.style.display = 'none';
+            });
+            let sectionToShow = document.getElementById(targetSection);
+            if (sectionToShow) {
+                sectionToShow.style.display = 'block';
+            }
+        });
+    });
+
+    let cart = [];
+    // Mise à jour de l'affichage panier
+    function updateCartDisplay() {
+        const cartList = document.getElementById('cart-items');
+        const cartTotal = document.getElementById('cart-total');
+        cartList.innerHTML = '';
+        let total = 0;
+
+        cart.forEach((item, index) => {
+            total += item.price * item.quantity;
+            let listItem = document.createElement('li');
+            listItem.innerHTML = `
+            ${item.name} ${item.quantity}
+            <button onclick="changeQuantity(${index}, 1)">+</button>
+            <button onclick="changeQuantity(${index}, -1)">-</button>
+            <button onclick="removeItem(${index})">Supprimer</button>
+            `;
+            cartList.appendChild(listItem);
+        });
+
+        // Mise à jour du total panier
+        cartTotal.textContent = total.toFixed(2);
+    }
+
+    // Modification de la quantité d'un article dans le panier
+    function changeQuantity(index, amount) {
+        if (cart[index]) {
+            cart[index].quantity += amount;
+            // Supprime l'article s'il y a plus de quantité
+            if (cart[index].quantity <= 0) {
+                cart.splice(index, 1);
+            }
+        }
+        updateCartDisplay();
+    }
+
+    // Suppression d'un article du panier
+    function removeItem(index) {
+        if (cart[index]) {
+            cart.splice(index, 1);
+            updateCartDisplay();
+        }
+    }
+
+    // Vider le panier entier
+    function clearCart() {
+        cart = [];
+        updateCartDisplay();
+    }
+
+    // Ajout bouton de suppression du panier
+    document.getElementById('clear-cart').addEventListener('click', clearCart);
+
+    // Ajout d'un article au panier quand l'utilisateur clique sur Commander
+    document.querySelectorAll('.commander-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const itemName = this.getAttribute('data-item');
+            const itemPrice = parseFloat(this.getAttribute('data-price').replace(',', '.'));
+
+
+            // Vérification de l'article si il est déjà dans le panier
+            const existingItem = cart.find(item => item.name === itemName);
+            if (existingItem) {
+                existingItem.quantity++; // Incrémente la quantité si l'article est déjà là
+                } else {
+                    cart.push({ name: itemName, price: itemPrice, quantity: 1 }); // Ajout nouvel article
+                    }
+                    updateCartDisplay();
+                });
+            });
+
+            // Cache toutes les sections du menu sauf la première affichée par défaut
+            document.querySelectorAll('.menu-section').forEach(section => {
+                section.style.display = 'none';
+            });
+            document.getElementById('starters').style.display = 'block'; // Affichage des Entrées par défaut
+            </script>
+            </body>
+            </html>

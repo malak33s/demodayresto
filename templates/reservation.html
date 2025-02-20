@@ -54,16 +54,16 @@
             const couverts = document.getElementById('couverts').value;
             const confirmation = document.getElementById('confirmation');
 
-            fetch('http://127.0.0.1:5000/reservations', { // ✅ Endpoint corrigé
+            fetch('http://127.0.0.1:5000/reservations', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    nom: customer_name, // ✅ Correction des champs
+                    nom: customer_name,
                     date: date,
                     horaire: heure,
-                    nombre_couverts: parseInt(couverts) // ✅ Convertir en nombre
+                    nombre_couverts: parseInt(couverts)
                 })
             })
             .then(response => response.json())

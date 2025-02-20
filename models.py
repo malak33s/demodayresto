@@ -30,14 +30,13 @@ class Commande(db.Model):
     def __repr__(self):
         return f"<Commande(id={self.id}, nom={self.nom_client}, plats={self.plats}, heure={self.heure_retrait}, statut={self.statut}, code_reservation={self.code_reservation})>"
 
+from db_connection import db
+
 class Menu(db.Model):
-    __tablename__ = 'menu'
-
-    id = db.Column(Integer, primary_key=True)
-    nom = db.Column(String(100), unique=True, nullable=False)
-    description = db.Column(String(255), nullable=True)
-    type = db.Column(String(50), nullable=False)  # "entrée", "plat", "dessert", "boisson", etc.
-    prix = db.Column(Float, nullable=False)
-
-    def __repr__(self):
-        return f"<Menu(id={self.id}, nom={self.nom}, type={self.type}, prix={self.prix})>"
+    id = db.Column(db.Integer, primary_key=True)
+    nom = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.Text, nullable=False)
+    type = db.Column(db.String(50), nullable=False)  # entrée, plat, dessert, boisson
+    prix = db.Column(db.Float, nullable=False)
+    quantite_disponible = db.Column(db.Integer, nullable=False)
+    temps_preparation = db.Column(db.Integer, nullable=False)  # en minutes
