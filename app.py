@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request
 from db_connection import db, app  # Importation de db et app
-from models import Reservation, Menu  # Importation groupée
+from models import Reservation, Menu, Commande, CommandeItem  # Importation groupée
 from flask_migrate import Migrate
 import random
 import datetime
@@ -52,7 +52,7 @@ def get_horaires_disponibles():
     for debut, fin in horaires:
         heure_actuelle = datetime.datetime.strptime(debut, "%H:%M")
         fin_horaire = datetime.datetime.strptime(fin, "%H:%M")
-        while heure_actuelle < fin_horaire:  # Correction ici
+        while heure_actuelle < fin_horaire:
             heure_str = heure_actuelle.strftime("%H:%M")
             couverts_reserves = db.session.query(Reservation).filter_by(date=date, horaire=heure_str).all()
             total_reserves = sum(res.nombre_couverts for res in couverts_reserves)
@@ -120,7 +120,7 @@ def reserver_table():
 
 @app.route('/ajouter-menus', methods=['POST'])
 def ajouter_menus():
-    """ menus à la base de données."""
+    """Menus à la base de données."""
     plats = [
         {"nom": "Brick", "description": "Brick garnie d'un œuf coulant, de thon, de persil et d'épices.",
          "type": "entrée", "prix": 2.90, "quantite_disponible": 30, "temps_preparation": 20},
@@ -156,6 +156,65 @@ def get_menus():
         for menu in menus
     ]
     return jsonify(result), 200
+
+@app.route('/api/commande', methods=['POST'])
+def create_commande():
+    """Créer une commande à emporter."""
+    data = request.get_json()
+
+    nom_client = data.get('name')
+    date_retrait = data.get('date')
+    heure_retrait = data.get('time')
+    items = data.get('items')  # Liste des articles dans la commande
+
+    if not nom_client or not date_retrait or not heure_retrait or not items:
+        return jsonify({"message": "Tous les champs sont requis (nom, date, heure, articles)"}), 400
+
+    # Calculer le total de la commande
+    total = sum(item['price'] * item['quantity'] for item in items)
+
+    # Créer une nouvelle commande dans la base de données
+    nouvelle_commande = Commande(
+        nom_client=nom_client,
+        date_retrait=date_retrait,
+        heure_retrait=heure_retrait,
+        total=total,
+        statut="En attente",  # Statut initial
+    )
+
+    db.session.add(nouvelle_commande)
+    db.session.commit()
+
+    # Ajouter les articles de la commande dans une table liée (CommandeItem)
+    for item in items:
+        commande_item = CommandeItem(
+            commande_id=nouvelle_commande.id,
+            nom=item['name'],
+            prix=item['price'],
+            quantite=item['quantity']
+        )
+        db.session.add(commande_item)
+
+    db.session.commit()
+
+    return jsonify({"message": "Commande enregistrée", "order_id": nouvelle_commande.id}), 201
+
+@app.route('/commandes/<int:id>', methods=['GET'])
+def get_commande(id):
+    """Retourne les détails d'une commande par son ID."""
+    commande = Commande.query.get(id)
+    if not commande:
+        return jsonify({"message": "Commande non trouvée"}), 404
+    
+    return jsonify({
+        "id": commande.id,
+        "nom_client": commande.nom_client,
+        "plats": [{"nom": item.nom, "quantite": item.quantite, "prix": item.prix} for item in commande.commande_items],
+        "heure_retrait": commande.heure_retrait,
+        "total": commande.total,
+        "statut": commande.statut
+    }), 200
+
 
 if __name__ == '__main__':
     app.run(debug=True)
