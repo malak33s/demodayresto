@@ -5,6 +5,8 @@ from flask_migrate import Migrate
 import random
 import datetime
 import locale
+import uuid # Pour générer des codes de réservation uniques
+from models import Commande
 
 # Définir locale en français pour obtenir les jours correctement
 locale.setlocale(locale.LC_TIME, "fr_FR.UTF-8")
@@ -156,6 +158,225 @@ def get_menus():
         for menu in menus
     ]
     return jsonify(result), 200
+
+#PARTIE ADMIN - GESTION DES RÉSERVATIONS
+# Route pour obtenir toutes les réservations
+@app.route('/admin/reservations', methods=['GET'])
+def obt_reservations():
+    reservations = Reservation.query.all()
+    result = [
+        {
+            "id": reservation.id,
+            "nom": reservation.nom,
+            "date": reservation.date if reservation.date else None,
+            "horaire": reservation.horaire,
+            "nombre_couverts": reservation.nombre_couverts,
+            "code_reservation": reservation.code_reservation
+        }
+        for reservation in reservations
+        ]
+    return jsonify(result), 200
+
+# Récupérer une réservation par l'ID
+@app.route('/admin/reservations/<int:reservation_id>', methods=['GET'])
+def recup_reservation_par_id(reservation_id):
+    reservation = Reservation.query.get(reservation_id)
+    if not reservation:
+        return jsonify({"message": "Réservation introuvable"}), 404
+    
+    result = {
+        "id": reservation.id,
+        "nom": reservation.nom,
+        "date": reservation.date if reservation.date else None,
+        "horaire": reservation.horaire,
+        "nombre_couverts": reservation.nombre_couverts,
+        "code_reservation": reservation.code_reservation
+        }
+    return jsonify(result), 200
+
+# Ajouter une réservation côté admin
+@app.route('/admin/reservations', methods=['POST'])
+def ajout_reservation_admin():
+    try:
+        data = request.get_json()
+        nom = data.get('nom')
+        date = data.get('date')
+        horaire = data.get('horaire')
+        nombre_couverts = data.get('nombre_couverts')
+        
+        if not all([nom, date, horaire, nombre_couverts]):
+            db.session.rollback()
+            return jsonify({"message": "Tous les champs doivent être remplis"}), 400
+        
+        # Génération du code unique
+        code_reservation = str(uuid.uuid4())[:8]
+        nouvelle_reservation = Reservation(
+            nom=nom,
+            date=date,
+            horaire=horaire,
+            nombre_couverts=nombre_couverts,
+            code_reservation=code_reservation
+            )
+        
+        db.session.add(nouvelle_reservation)
+        db.session.commit()
+        return jsonify({"message": "Réservation ajoutée côté admin", "code_reservation": code_reservation}), 201
+    
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"message": str(e)}), 500
+
+# Route pour supprimer une réservation
+@app.route('/admin/reservations/<int:id>', methods=['DELETE'])
+def supp_reservation(id):
+    try:
+        reservation = Reservation.query.get(id)
+        if not reservation:
+            return jsonify({"message": "Réservation introuvable"}), 404
+        
+        db.session.delete(reservation)
+        db.session.commit() # mise à jour bd
+        return jsonify({"message": "Réservation supprimée"}), 200
+    except Exception as e: # si rien fonctionne
+        db.session.rollback()
+        return jsonify({"message": str(e)}), 500
+
+# Route pour modifier une réservation
+@app.route('/admin/reservations/<int:id>', methods=['PUT'])
+def modifier_reservation(id):
+    try:
+        reservation = Reservation.query.get(id)
+        if not reservation:
+            return jsonify({"message": "Réservation introuvable"}), 404
+        
+        data = request.get_json()
+        if not data:
+            return jsonify({"message": "Données invalides"}), 400
+        
+        # Mise à jour pour les champs
+        reservation.nom = data.get("nom", reservation.nom)
+        reservation.date = data.get("date", reservation.date)
+        reservation.horaire = data.get("horaire", reservation.horaire)
+        
+        nombre_couverts = data.get("nombre_couverts")
+        if nombre_couverts is not None:
+            try:
+                nombre_couverts = int(nombre_couverts)
+                if nombre_couverts <= 0:
+                    return jsonify({"message": "Nombre de couverts invalide"}), 400
+                reservation.nombre_couverts = nombre_couverts
+            except ValueError:
+                return jsonify({"message": "Nombre de couverts doit être un nombre entier"}), 400
+            
+            db.session.commit()
+            return jsonify({"message": "Réservation modifiée"}), 200
+    except Exception as e:
+            db.session.rollback()
+            return jsonify({"message": "Erreur lors de la modification de la réservation", "error": str(e)}), 500
+
+#PARTIE ADMIN
+# Route pour obtenir toutes les commandes
+@app.route('/admin/commandes', methods=['GET'])
+def obt_commandes():
+    commandes = Commande.query.all()
+    result=[
+        {
+            "id": commande.id,
+            "nom_client": commande.nom_client,
+            "plats": commande.plats,
+            "heure_retrait": commande.heure_retrait,
+            "statut": commande.statut,
+            "code_reservation": commande.code_reservation,
+            "created_at": commande.created_at.strftime("%Y-%m-%d %H:%M:%S")
+        }
+        for commande in commandes
+    ]
+    return jsonify(result), 200
+
+# Récupérer une commande par l'ID
+@app.route('/admin/commandes/<int:commande_id>', methods=['GET'])
+def recup_commande_par_id(commande_id):
+    commande = Commande.query.get(commande_id)
+    if not commande:
+        return jsonify({"message": "Commande introuvable"}), 404
+    else:
+        result = {
+                "id": commande.id,
+                "nom_client": commande.nom_client,
+                "plats": commande.plats,
+                "heure_retrait": commande.heure_retrait,
+                "statut": commande.statut,
+                "code_reservation": commande.code_reservation,
+                "created_at": commande.created_at.strftime("%Y-%m-%d %H:%M:%S")
+        }
+        return jsonify(result), 200
+
+# Ajouter une commande coté admin
+@app.route('/admin/commandes', methods=['POST'])
+def ajout_commande_admin():
+    try:
+        data = request.get_json()
+        nom_client = data.get('nom_client')
+        date = data.get('date')
+        plats = data.get('plats')
+        total = data.get('total')
+        
+        if not all([nom_client, date, plats, total]):
+            return jsonify({"message": "Tous les champs doivent être remplis"}), 400
+        
+        code_commande = str(uuid.uuid4())[:8]
+        nouvelle_commande = ajouter_menus(
+            nom_client=nom_client,
+            date=date,
+            plats=plats,
+            total=total,
+            code_commande=code_commande
+        )
+        
+        db.session.add(nouvelle_commande)
+        db.session.commit()
+        return jsonify({"message": "Commande ajoutée coté admin", "code_commande": code_commande}), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"message": "Erreur lors de l'ajout de la commande", "error": str(e)}), 500
+
+# Route pour supprimer une commande
+@app.route('/admin/commandes/<int:id>', methods=['DELETE'])
+def supp_commande(id):
+    try:
+        commande = commande.query.get(id)
+        if not commande:
+            return jsonify({"message": "Commande introuvable"}), 404
+
+        db.session.delete(commande)
+        db.session.commit()
+        return jsonify({"message": "Commande supprimée"}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"message": "Erreur lors de la suppression de la commande", "error": str(e)}), 500
+
+# Route pour modifier une commande
+@app.route('/admin/commandes/<int:id>', methods=['PUT'])
+def modifier_commande(id):
+    try:
+        commande = commande.query.get(id)
+        if not commande:
+            return jsonify({"message": "Commande introuvable"}), 404
+
+        data = request.get_json()
+        if not data:
+            return jsonify({"message": "Données invalides"}), 400
+
+        commande.nom_client = data.get("nom_client", commande.nom_client)
+        commande.date = data.get("date", commande.date)
+        commande.plats = data.get("plats", commande.plats)
+        commande.total = data.get("total", commande.total)
+
+        db.session.commit()
+        return jsonify({"message": "Commande modifiée"}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"message": "Erreur lors de la modification de la commande", "error": str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
