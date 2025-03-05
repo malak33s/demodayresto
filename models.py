@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, String, DateTime, JSON, ForeignKey, Floa
 from datetime import datetime
 from db_connection import db  # Utilisation de db.Model
 
+
 class Reservation(db.Model):
     __tablename__ = 'reservations'
 
