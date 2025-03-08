@@ -61,3 +61,6 @@ class Menu(db.Model):
 
     def __repr__(self):
         return f"<Menu(id={self.id}, nom={self.nom}, prix={self.prix}, quantite_disponible={self.quantite_disponible})>"
+
+    # Ajout de extend_existing=True pour éviter les conflits de redéfinition
+    __table_args__ = {'extend_existing': True}

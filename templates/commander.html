@@ -193,28 +193,33 @@
                     <button class="btn commander-btn" data-item="Espresso" data-price="2.50">Commander</button>
                 </div>
             </section>
-
+            
             <!-- PANIER -->
-            <section id="panier">
-                <h2>Mon Panier</h2>
-                <ul id="cart-items"></ul>
-                <p>Total: <span id="cart-total">0.00</span>€</p>
-                
-                <!-- Champs pour la commande -->
-                <label for="nom_client">Nom pour la commande:</label>
-                <input type="text" id="nom_client" placeholder="Entrez votre nom" required>
-                
-                <label for="pickup-date">Date de récupération:</label>
-                <input type="date" id="pickup-date" required>
-                
-                <label for="pickup-time">Heure de récupération:</label>
-                <input type="time" id="pickup-time" required>
-            
-                <!-- Bouton pour valider la commande -->
-                <button id="validate-order" class="btn">Valider la commande</button>
-            </section>
-            
-            <!-- Section de récapitulatif de la commande -->
+<section id="panier">
+    <h2>Mon Panier</h2>
+    <ul id="cart-items"></ul> <!-- Liste des articles du panier -->
+    <p>Total: <span id="cart-total">0.00</span>€</p>
+
+    <!-- Bouton pour valider la commande (cela affichera le formulaire de récupération) -->
+    <button id="validate-order" class="btn">Valider la commande</button>
+</section>
+
+<!-- Formulaire pour la récupération, caché par défaut -->
+<section id="recovery-form" style="display:none;">
+    <h2>Informations de récupération</h2>
+    <label for="nom_client">Nom pour la commande:</label>
+    <input type="text" id="nom_client" placeholder="Entrez votre nom" required>
+
+    <label for="pickup-date">Date de récupération:</label>
+    <input type="date" id="pickup-date" required>
+
+    <label for="pickup-time">Heure de récupération:</label>
+    <input type="time" id="pickup-time" required>
+
+    <!-- Bouton pour finaliser la commande -->
+    <button id="finalize-order" class="btn">Finaliser la commande</button>
+</section>
+                <!-- Section de récapitulatif de la commande -->
             <section id="order-summary" style="display:none;">
                 <h2>Récapitulatif de la commande</h2>
                 <p id="summary-items"></p>
@@ -242,139 +247,120 @@
             
         </div>
     </div>
-    <script>
+
+<script>
     // Gestion de navigation pour le menu
     document.querySelectorAll('.menu-link').forEach(link => {
         link.addEventListener('click', function(event) {
-            event.preventDefault();
-            let targetSection = this.getAttribute('data-target');
-            // Masquer les sections avant d'afficher la bonne
+            event.preventDefault(); // Empêche le comportement par défaut du lien
+            let targetSection = this.getAttribute('data-target'); // Récupère la section ciblée
+    
+            // Masquer toutes les sections
             document.querySelectorAll('.menu-section').forEach(section => {
                 section.style.display = 'none';
             });
+    
+            // Afficher la section ciblée
             let sectionToShow = document.getElementById(targetSection);
             if (sectionToShow) {
                 sectionToShow.style.display = 'block';
             }
         });
     });
+    
 
-    let cart = [];
-    // Fonction pour afficher le panier
+    let cart = []; // Tableau qui contient les articles du panier
+
+// Fonction pour afficher le panier
 function updateCartDisplay() {
     const cartList = document.getElementById('cart-items');
     const cartTotal = document.getElementById('cart-total');
-    cartList.innerHTML = '';
+    cartList.innerHTML = '';  // Vider la liste des articles
     let total = 0;
 
     cart.forEach((item, index) => {
-        total += item.price * item.quantity;
+        total += item.price * item.quantity; // Calcul du total
         let listItem = document.createElement('li');
         listItem.innerHTML = `
-        ${item.name} ${item.quantity}
-        <button onclick="changeQuantity(${index}, 1)">+</button>
-        <button onclick="changeQuantity(${index}, -1)">-</button>
-        <button onclick="removeItem(${index})">Supprimer</button>
+            ${item.name} x${item.quantity}
+            <button onclick="changeQuantity(${index}, 1)" class="quantity-btn">+</button>
+            <button onclick="changeQuantity(${index}, -1)" class="quantity-btn">-</button>
+            <button onclick="removeItem(${index})">Supprimer</button>
         `;
         cartList.appendChild(listItem);
     });
 
-    // Mise à jour du total panier
-    cartTotal.textContent = total.toFixed(2);
+    cartTotal.textContent = total.toFixed(2); // Afficher le total
 }
 
-// Fonction pour valider la commande
-function validateOrder() {
-    const orderName = document.getElementById('nom_client').value;
+// Fonction pour ajouter un article au panier
+document.querySelectorAll('.commander-btn').forEach(button => {
+    button.addEventListener('click', function() {
+        const itemName = this.getAttribute('data-item');
+        const itemPrice = parseFloat(this.getAttribute('data-price'));
+
+        // Vérifie si l'article est déjà dans le panier
+        let existingItem = cart.find(item => item.name === itemName);
+
+        if (existingItem) {
+            existingItem.quantity += 1; // Si déjà dans le panier, on augmente la quantité
+        } else {
+            cart.push({ name: itemName, price: itemPrice, quantity: 1 }); // Ajoute un nouvel article au panier
+        }
+
+        updateCartDisplay(); // Met à jour l'affichage du panier
+    });
+});
+
+// Fonction pour changer la quantité d'un article dans le panier
+function changeQuantity(index, delta) {
+    if (cart[index].quantity + delta > 0) { // Empêche une quantité inférieure à 1
+        cart[index].quantity += delta;
+        updateCartDisplay();
+    }
+}
+
+// Fonction pour supprimer un article du panier
+function removeItem(index) {
+    cart.splice(index, 1); // Retire l'élément du panier
+    updateCartDisplay(); // Met à jour l'affichage du panier
+}
+
+// Fonction pour valider la commande et afficher le formulaire de récupération
+document.getElementById('validate-order').addEventListener('click', function() {
+    document.getElementById('recovery-form').style.display = 'block';  // Affiche le formulaire de récupération
+});
+
+// Fonction pour finaliser la commande et afficher un récapitulatif
+document.getElementById('finalize-order').addEventListener('click', function() {
+    const clientName = document.getElementById('nom_client').value;
     const pickupDate = document.getElementById('pickup-date').value;
     const pickupTime = document.getElementById('pickup-time').value;
 
-    if (!orderName || !pickupDate || !pickupTime) {
+    if (clientName && pickupDate && pickupTime) {
+        // Remplir les informations du récapitulatif
+        document.getElementById('summary-items').textContent = cart.map(item => `${item.name} x${item.quantity}`).join(', ');
+        document.getElementById('summary-total').textContent = cart.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2);
+        document.getElementById('summary-name').textContent = clientName;
+        document.getElementById('summary-date').textContent = pickupDate;
+        document.getElementById('summary-time').textContent = pickupTime;
+
+        // Afficher le récapitulatif et cacher les autres sections
+        document.getElementById('order-summary').style.display = 'block';
+        document.getElementById('recovery-form').style.display = 'none';
+    } else {
         alert("Veuillez remplir tous les champs.");
-        return;
     }
+});
 
-    // Affichage du récapitulatif
-    document.getElementById('order-summary').style.display = 'block';
-    document.getElementById('cart-items').style.display = 'none';
-    document.getElementById('cart-total').style.display = 'none';
-    document.getElementById('pickup-date').style.display = 'none';
-    document.getElementById('pickup-time').style.display = 'none';
-    document.getElementById('order-name').style.display = 'none';
-    document.getElementById('validate-order').style.display = 'none';
+// Cache toutes les sections du menu sauf la première affichée par défaut
+document.querySelectorAll('.menu-section').forEach(section => {
+    section.style.display = 'none';
+});
+document.getElementById('Entrées').style.display = 'block'; // Affichage des Entrées par défaut
 
-    // Récapitulation des articles dans le panier
-    const summaryItems = document.getElementById('summary-items');
-    let itemsList = '';
-    let total = 0;
-
-    cart.forEach(item => {
-        itemsList += `${item.name} x${item.quantity}<br>`;
-        total += item.price * item.quantity;
-    });
-
-    summaryItems.innerHTML = itemsList;
-    document.getElementById('summary-total').textContent = total.toFixed(2);
-    document.getElementById('summary-name').textContent = orderName;
-    document.getElementById('summary-date').textContent = pickupDate;
-    document.getElementById('summary-time').textContent = pickupTime;
-
-    // Confirmer la commande dans la console (et peut-être l'envoyer au back-end)
-    console.log(`Commande confirmée pour ${orderName} le ${pickupDate} à ${pickupTime}.`);
-}
-
-// Remplacer le bouton "Vider le panier" par "Valider la commande"
-document.getElementById('validate-order').addEventListener('click', validateOrder);
-
-
-    // Ajout d'un article au panier quand l'utilisateur clique sur Commander
-    document.querySelectorAll('.commander-btn').forEach(button => {
-        button.addEventListener('click', function() {
-            const itemName = this.getAttribute('data-item');
-            const itemPrice = parseFloat(this.getAttribute('data-price').replace(',', '.'));
-
-
-            // Vérification de l'article si il est déjà dans le panier
-            const existingItem = cart.find(item => item.name === itemName);
-            if (existingItem) {
-                existingItem.quantity++; // Incrémente la quantité si l'article est déjà là
-                } else {
-                    cart.push({ name: itemName, price: itemPrice, quantity: 1 }); // Ajout nouvel article
-                    }
-                    updateCartDisplay();
-                });
-            });
-
-            // Cache toutes les sections du menu sauf la première affichée par défaut
-            document.querySelectorAll('.menu-section').forEach(section => {
-                section.style.display = 'none';
-            });
-            document.getElementById('Entrées').style.display = 'block'; // Affichage des Entrées par défaut
-            function getPickupInfo() {
-                const pickupDate = document.getElementById('pickup-date').value;
-                const pickupTime = document.getElementById('pickup-time').value;
-                return { pickupDate, pickupTime };
-            }
-            
-            // Lorsque l'utilisateur clique sur "Commander", il peut valider la commande avec la date et l'heure
-            document.querySelector('#clear-cart').addEventListener('click', () => {
-                const { pickupDate, pickupTime } = getPickupInfo();
-                console.log(`Commande confirmée pour le ${pickupDate} à ${pickupTime}`);
-                // Tu pourrais envoyer cette info au back-end pour l'enregistrement
-            });
-
-            // Fonction pour finaliser la commande
-            function finalizeOrder() {
-                document.getElementById('recapitulatif').style.display = 'none';
-                document.getElementById('confirmation').style.display = 'block';
-            }
-
-            document.getElementById('finaliser-commande').addEventListener('click', finalizeOrder);
-
-            // Exemple d'ajout d'articles au panier (à adapter selon votre logique)
-            cart.push({ name: 'Couscous', quantity: 2, price: 10 });
-            cart.push({ name: 'Brik', quantity: 1, price: 5 });
-            updateCartDisplay();
-            </script>
-            </body>
-            </html>
+// Exemple d'ajout d'articles au panier
+cart.push({ name: 'Couscous', quantity: 2, price: 10 });
+cart.push({ name: 'Brik', quantity: 1, price: 5 });
+updateCartDisplay();
+</script>

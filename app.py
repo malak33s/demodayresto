@@ -23,6 +23,27 @@ HORAIRES_RESTAURANT = {
     "dimanche": []
 }
 
+def verifier_heure_retrait(date_retrait, heure_retrait):
+    """Vérifie si l'heure de retrait est dans les horaires d'ouverture du restaurant."""
+    jour = obtenir_jour_semaine(date_retrait)
+    horaires_jour = HORAIRES_RESTAURANT.get(jour, [])
+    
+    # Vérifie si le restaurant est ouvert ce jour-là
+    if not horaires_jour:
+        return False
+    
+    # Vérifie si l'heure de retrait est dans l'un des créneaux horaires du jour
+    for debut, fin in horaires_jour:
+        heure_debut = datetime.datetime.strptime(debut, "%H:%M")
+        heure_fin = datetime.datetime.strptime(fin, "%H:%M")
+        heure_retrait_obj = datetime.datetime.strptime(heure_retrait, "%H:%M")
+        
+        # Si l'heure de retrait est dans les horaires
+        if heure_debut <= heure_retrait_obj <= heure_fin:
+            return True
+    
+    return False
+
 TOTAL_COUVERTS_DISPONIBLES = 50
 
 def obtenir_jour_semaine(date_str):
@@ -95,16 +116,19 @@ def reserver_table():
             heure_actuelle += datetime.timedelta(minutes=1)
 
     if horaire not in horaires_valides:
-        return jsonify({"message": "Restaurant fermé"}), 400
+        return jsonify({"message": "Horaires indisponibles"}), 400
     
+    # Vérifier la disponibilité des couverts
     couverts_reserves = db.session.query(Reservation).filter_by(date=date, horaire=horaire).all()
     total_reserves = sum(res.nombre_couverts for res in couverts_reserves)
     
     if total_reserves + nombre_couverts > TOTAL_COUVERTS_DISPONIBLES:
         return jsonify({"message": "Nombre de couverts non disponible"}), 400
     
+    # Générer un code de réservation unique
     nouveau_code = str(random.randint(1000, 9999))
     
+    # Créer une nouvelle réservation
     nouvelle_reservation = Reservation(
         nom=nom,
         date=date,
@@ -170,6 +194,10 @@ def create_commande():
     if not nom_client or not date_retrait or not heure_retrait or not items:
         return jsonify({"message": "Tous les champs sont requis (nom, date, heure, articles)"}), 400
 
+    # Validation de l'heure de retrait
+    if not verifier_heure_retrait(date_retrait, heure_retrait):
+        return jsonify({"message": "L'heure de retrait est en dehors des horaires d'ouverture du restaurant."}), 400
+
     # Calculer le total de la commande
     total = sum(item['price'] * item['quantity'] for item in items)
 
@@ -189,15 +217,24 @@ def create_commande():
     for item in items:
         commande_item = CommandeItem(
             commande_id=nouvelle_commande.id,
-            nom=item['name'],
-            prix=item['price'],
-            quantite=item['quantity']
+            plat_id=item['id'],
+            quantite=item['quantity'],
+            prix_total=item['price'] * item['quantity']
         )
         db.session.add(commande_item)
 
     db.session.commit()
 
-    return jsonify({"message": "Commande enregistrée", "order_id": nouvelle_commande.id}), 201
+    return jsonify({
+        "message": "Commande enregistrée",
+        "order_id": nouvelle_commande.id,
+        "nom_client": nom_client,
+        "date_retrait": date_retrait,
+        "heure_retrait": heure_retrait,
+        "total": total,
+        "items": items
+    }), 201
+
 
 @app.route('/commandes/<int:id>', methods=['GET'])
 def get_commande(id):
@@ -209,12 +246,23 @@ def get_commande(id):
     return jsonify({
         "id": commande.id,
         "nom_client": commande.nom_client,
-        "plats": [{"nom": item.nom, "quantite": item.quantite, "prix": item.prix} for item in commande.commande_items],
+        "plats": [{"nom": item.plat.nom, "quantite": item.quantite, "prix": item.prix_total} for item in commande.items],
         "heure_retrait": commande.heure_retrait,
         "total": commande.total,
         "statut": commande.statut
     }), 200
 
+@app.route('/commandes/<int:id>/confirmer', methods=['POST'])
+def confirmer_commande(id):
+    """Confirmer la commande finale."""
+    commande = Commande.query.get(id)
+    if not commande:
+        return jsonify({"message": "Commande non trouvée"}), 404
+
+    commande.statut = "Confirmée"
+    db.session.commit()
+
+    return jsonify({"message": "Commande confirmée"}), 200
 
 if __name__ == '__main__':
     app.run(debug=True)

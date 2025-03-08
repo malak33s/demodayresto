@@ -60,9 +60,9 @@
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    nom: customer_name,
+                    nom: customer_name,  // Correspondre au champ attendu côté back-end
                     date: date,
-                    horaire: heure,
+                    horaire: heure,  // Correspondre au champ attendu côté back-end
                     nombre_couverts: parseInt(couverts)
                 })
             })
