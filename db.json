@@ -1,0 +1,44 @@
+{
+  "reservations": [
+    {
+      "id": "12",
+      "type": "Réservation",
+      "code": "RES-20250321-12",
+      "nom": "Mathieu Dubois",
+      "date": "2025-03-21",
+      "heure": "19:00",
+      "details": "7 couverts",
+      "prix": ""
+    },
+    {
+      "id": "19",
+      "type": "Réservation",
+      "code": "RES-20250328-19",
+      "nom": "Sophie Morel",
+      "date": "2025-03-28",
+      "heure": "19:00",
+      "details": "5 couverts",
+      "prix": ""
+    },
+    {
+      "id": "20",
+      "type": "Commande",
+      "code": "COM-20250329-20",
+      "nom": "Lucas Bernard",
+      "date": "2025-03-29",
+      "heure": "14:30",
+      "details": "Entrée: Brick au thon (1), Plat: Lablabi (1), Dessert: Gâteau de semoule (1), Boisson: Café turc (1)",
+      "prix": "19.50 €"
+    },
+    {
+      "id": "21",
+      "type": "Commande",
+      "code": "COM-20250331-21",
+      "nom": "Victor Leroy",
+      "date": "2025-03-31",
+      "heure": "18:45",
+      "details": "Entrée: Slata Méchouia (1), Plat: Nwasser (1), Dessert: Zrir (1), Boisson: Eau Abatilles (1)",
+      "prix": "26.00 €"
+    }
+  ]
+}
