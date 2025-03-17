@@ -1,0 +1,170 @@
+/* Réinitialisation de la mise en page */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+
+/* CORRECTION DE L'IMAGE DE FOND */
+body {
+    background: url('/static/css/image_2.jpeg') center/cover no-repeat fixed;
+    min-height: 100vh;
+    position: relative;
+}
+
+/* Ajout d'un voile sombre pour améliorer la lisibilité */
+body::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4); /* Ajuste l'opacité si nécessaire */
+    z-index: -1;
+}
+
+/* HEADER */
+header {
+    width: 100%;
+    background: white; /* Ajout d'un fond semi-transparent */
+    padding: 15px 0;
+    text-align: center;
+}
+
+header h1 {
+    font-family: 'Aref Ruqaa', serif;
+    font-size: 3rem;
+    color: #51aff7;
+}
+
+/* NAVIGATION */
+nav {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+nav a {
+    text-decoration: none;
+    color: white;
+    background: #51aff7;
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-size: 1rem;
+    transition: 0.3s;
+}
+
+nav a:hover {
+    background: #3a92d1;
+}
+
+/*CONTAINER PRINCIPAL */
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 80vh;
+    padding: 20px;
+}
+
+/* Boîte contenant le filtre et le tableau */
+.right-section {
+    background-color: #51aff7; /* Ajout d'un fond blanc semi-transparent */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    width: 95%; /* Augmente cette valeur pour élargir */
+    max-width: 1200px; /* Augmente cette valeur pour plus de largeur */
+    text-align: center;
+}
+
+
+/* FILTRE - Alignement propre */
+.filter-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.filter-container label {
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-right: 10px;
+    color: #333;
+}
+
+#typeFilter {
+    padding: 8px;
+    font-size: 1rem;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    background-color: white;
+    cursor: pointer;
+}
+
+/* TABLEAU */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+th, td {
+    padding: 12px;
+    text-align: center;
+    border: 1px solid black;
+}
+
+th {
+    background-color: #51aff7;
+    color: white;
+    font-size: 1rem;
+}
+
+/* STYLE DES BOUTONS */
+.btn-edit {
+    background-color: orange;
+    color: white;
+    padding: 6px 12px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.btn-delete {
+    background-color: red;
+    color: white;
+    padding: 6px 12px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.btn-edit:hover {
+    background-color: darkorange;
+}
+
+.btn-delete:hover {
+    background-color: darkred;
+}
+
+/* FOOTER */
+footer {
+    text-align: center;
+    padding: 10px;
+    background: white;
+    color: black;
+    margin-top: 20px;
+}

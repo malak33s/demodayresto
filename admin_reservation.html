@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Gestion | La Table de Carthage</title>
+    <link rel="stylesheet" href="../static/css/admin_reservation.css">
+</head>
+<body onload="verifierConnexion()">
+    <div id="login-container">
+        <h2>Connexion Admin</h2>
+        <form onsubmit="return verifierMotDePasse()">
+            <label for="password">Mot de passe :</label>
+            <input type="password" id="password" required>
+            <button type="submit">Se connecter</button>
+        </form>
+        <p id="error-message" style="color: red; display: none;">Mot de passe incorrect !</p>
+    </div>
+    
+    <div id="admin-content" style="display: none;">
+        <header>
+            <h1 class="restaurant-title">Administrateur - La Table de Carthage</h1>
+            <button onclick="deconnexion()">Déconnexion</button>
+        </header>
+        
+        <div class="container">
+            <div class="right-section">
+                <h2>Suivi Réservations/Commandes</h2>
+                <div class="filter-container">
+                    <label for="typeFilter">Filtrer par :</label>
+                    <select id="typeFilter" onchange="filtrerDonnees()">
+                        <option value="all">Tout afficher</option>
+                        <option value="Réservation">Réservations</option>
+                        <option value="Commande">Commandes</option>
+                    </select>
+                </div>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Type</th>
+                            <th>Code de réservation</th>
+                            <th>Client</th>
+                            <th>Date</th>
+                            <th>Heure de retrait</th>
+                            <th>Détails</th>
+                            <th>Prix</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reservationTable">
+                        <!-- Les réservations seront insérées ici dynamiquement -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <footer>
+            <p><a href="#">Mentions légales</a></p>
+            <p><a href="#">© 2025 La Table de Carthage - Tous droits réservés.</a></p>
+        </footer>
+    </div>
+    
+    <script>
+        // Fonction pour vérifier le mot de passe
+        function verifierMotDePasse() {
+            let motDePasse = document.getElementById("password").value;
+            let motDePasseCorrect = "tablecarthage33";
+            if (motDePasse === motDePasseCorrect) {
+                localStorage.setItem("isLoggedIn", "true");
+                afficherContenuAdmin();
+                return false;
+            } else {
+                document.getElementById("error-message").style.display = "block";
+                return false;
+            }
+        }
+        // Fonction pour vérifier si l'admin est connecté
+        function verifierConnexion() {
+            if (localStorage.getItem("isLoggedIn") === "true") {
+                afficherContenuAdmin();
+            }
+        }
+        // Fonction pour voir tout le contenu de l'admin
+        function afficherContenuAdmin() {
+            document.getElementById("login-container").style.display = "none";
+            document.getElementById("admin-content").style.display = "block";
+            chargerReservations();
+        }
+        // Fonction pour déconnecter l'admin
+        function deconnexion() {
+            localStorage.removeItem("isLoggedIn");
+            document.getElementById("login-container").style.display = "block";
+            document.getElementById("admin-content").style.display = "none";
+            document.getElementById("password").value = ""; // Réinitialiser le champ de mot de passe
+        }
+        // Variable pour stocker les réservations/commandes
+        let reservations = [];
+        document.addEventListener("DOMContentLoaded", function() {
+            fetch("http://localhost:5000/reservations")
+                .then(response => response.json())
+                .then(data => {
+                    reservations = data;
+                    afficherReservations(reservations);
+                })
+                .catch(error => console.error("Erreur lors du chargement des réservations:", error));
+        });
+        // Fonction pour afficher les réservations/commandes
+        function afficherReservations(data) {
+            let tbody = document.getElementById("reservationTable");
+            tbody.innerHTML = "";
+            
+            data.forEach(reservation => {
+                let row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${reservation.id}</td>
+                    <td>${reservation.type}</td>
+                    <td>${reservation.code || "N/A"}</td> <!-- Ajout du code de réservation -->
+                    <td>${reservation.nom}</td>
+                    <td>${reservation.date}</td>
+                    <td>${reservation.heure ? reservation.heure : "-"}</td>
+                    <td>${reservation.details ? reservation.details : "-"}</td>
+                    <td>${reservation.prix ? reservation.prix + " " : "-"}</td>
+                    <td>
+                        <a href="#" onclick="modifierLigne(this, ${reservation.id})">Modifier</a>
+                        <a href="#" onclick="supprimerReservation(${reservation.id}, this)">Supprimer</a>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        // Fonction pour filtrer le type (réservation/commande ou tout afficher)
+        function filtrerDonnees() {
+            let valeurFiltre = document.getElementById("typeFilter").value;
+            let donneesFiltrees = reservations.filter(res => valeurFiltre === "all" || res.type === valeurFiltre);
+            afficherReservations(donneesFiltrees);
+        }
+        // Fonction pour modifier une ligne
+        function modifierLigne(element, id) {
+            let row = element.closest('tr');
+            let type = row.cells[1].textContent.trim();
+            let colonnesModifiables = [3, 4, 5, 6];
+            if (type === "Commande"){
+                colonnesModifiables.push(7);
+            }
+            colonnesModifiables.forEach(index => {
+                let cell = row.cells[index];
+                let value = cell.textContent.trim().replace(" €", "");
+                let input = document.createElement("input");
+                input.type = "text";
+                input.value = value;
+                cell.innerHTML = "";
+                cell.appendChild(input);
+            });
+            row.cells[8].innerHTML = `
+                <a href="#" onclick="sauvegarderLigne(this, ${id})">Valider</a>
+                <a href="#" onclick="supprimerReservation(${id}, this)">Supprimer</a>
+            `;
+        }
+        // Fonction pour sauvegarder les modifcations d'une ligne
+        function sauvegarderLigne(element, id) {
+            let row = element.closest('tr');
+            let type = row.cells[1].textContent.trim();
+            let donneesMisesAJour = {
+                id: row.cells[0].textContent.trim(),
+                type: type,
+                code: row.cells[2].textContent.trim(),
+                nom: row.cells[3].querySelector("input").value,
+                date: row.cells[4].querySelector("input").value,
+                heure: row.cells[5].querySelector("input").value,
+                details: row.cells[6].querySelector("input").value,
+                prix: type === "Commande" ? parseFloat(row.cells[7].querySelector("input").value.replace(/[^0-9.]/g, "")).toFixed(2) + " euros" : ""
+            };
+            
+            fetch(`http://localhost:5000/reservations/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(donneesMisesAJour)
+            })
+            .then(response => response.json())
+            .then(() => {
+                alert("Modification validée !");
+                fetch("http://localhost:5000/reservations")
+                    .then(response => response.json())
+                    .then(data => {
+                        reservations = data;
+                        afficherReservations(reservations);
+                    });
+            })
+            .catch(error => console.error("Erreur:", error));
+        }
+        
+        function supprimerReservation(id, element) {
+            if (confirm("Êtes-vous sûr de vouloir supprimer cette réservation/commande ?")) {
+                fetch(`http://localhost:5000/reservations/${id}`, {
+                    method: 'DELETE'
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Erreur lors de la suppression");
+                    }
+                    return response.json();
+                })
+                .then(() => {
+                    alert("Suppression réussie !");
+                    // Supprimer visuellement la ligne sans recharger la page
+                    let row = element.closest("tr");
+                    row.remove();
+                })
+                .catch(error => console.error("Erreur:", error));
+            }
+        }
+    </script>
+</body>
+</html>
