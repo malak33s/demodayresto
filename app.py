@@ -32,10 +32,6 @@ def obtenir_jour_semaine(date_str):
     date_obj = datetime.datetime.strptime(date_str, "%Y-%m-%d")
     return date_obj.strftime("%A").lower()
 
-@app.route('/')
-def home():
-    """Route pour la page d'accueil"""
-    return "Bienvenue sur le site du restaurant!"
 
 @app.route('/horaires-disponibles', methods=['GET'])
 def get_horaires_disponibles():
@@ -185,7 +181,7 @@ def obt_reservations():
     return jsonify(result), 200
 
 # Récupérer une réservation par l'ID
-@app.route('/admin/reservationsd>', methods=['GET'])
+@app.route('/admin/reservations/<int:reservation_id>', methods=['GET'])
 def recup_reservation_par_id(reservation_id):
     reservation = Reservation.query.get(reservation_id)
     if not reservation:
@@ -332,13 +328,14 @@ def ajout_commande_admin():
             return jsonify({"message": "Tous les champs doivent être remplis"}), 400
         
         code_commande = str(uuid.uuid4())[:8]
-        nouvelle_commande = ajouter_menus(
+        nouvelle_commande = Commande(
             nom_client=nom_client,
             date=date,
             plats=plats,
             total=total,
             code_commande=code_commande
-        )
+)
+
         
         db.session.add(nouvelle_commande)
         db.session.commit()
@@ -351,7 +348,8 @@ def ajout_commande_admin():
 @app.route('/admin/commandes/<int:id>', methods=['DELETE'])
 def supp_commande(id):
     try:
-        commande = commande.query.get(id)
+        commande = Commande.query.get(id)
+        
         if not commande:
             return jsonify({"message": "Commande introuvable"}), 404
 

@@ -181,3 +181,77 @@ footer a {
 footer a:hover {
     color: #51aff7 !important; /* Bleu au survol */
 }
+
+/* Ajout des styles pour la carte avec les images */
+#menuContainer {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-top: 40px;
+}
+
+/* Conteneur des images */
+.menu-images {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px; /* Espacement entre le titre et les images */
+}
+
+/* Style des images */
+.menu-image {
+    max-width: 45%; /* Limite la taille des images */
+    border-radius: 10px; /* Bord arrondi */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Ombre légère autour des images */
+}
+
+/* Ajout d'une légère animation au survol des images */
+.menu-image:hover {
+    transform: scale(1.05); /* Agrandissement léger au survol */
+    transition: transform 0.3s ease;
+}
+/* Style pour l'overlay en plein écran */
+.fullscreen-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8); /* Fond semi-transparent */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Pour s'assurer que l'overlay est au-dessus de tout */
+}
+
+/* Style pour les images du menu dans l'overlay */
+.menu-images {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.menu-image {
+    max-width: 90%;
+    max-height: 80%;
+    object-fit: contain;
+}
+
+/* Bouton de fermeture */
+.close-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    padding: 10px 20px;
+    background-color: red;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.close-btn:hover {
+    background-color: darkred;
+}

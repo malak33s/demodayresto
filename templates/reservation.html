@@ -11,7 +11,7 @@
         <h1 class="restaurant-title">La Table de Carthage</h1>
         <nav>
             <a href="index.html" class="btn">Accueil</a>
-            <a href="chemin/vers/ta-carte.pdf" class="btn" download>Notre carte</a>
+            <a href="../static/css/carte_menu_resto.pdf" class="btn" download>Notre carte</a>
             <a href="commander.html" class="btn">À emporter</a>
         </nav>
     </header>
@@ -60,9 +60,9 @@
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    nom: customer_name,  // Correspondre au champ attendu côté back-end
+                    nom: customer_name,
                     date: date,
-                    horaire: heure,  // Correspondre au champ attendu côté back-end
+                    horaire: heure,
                     nombre_couverts: parseInt(couverts)
                 })
             })

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -16,14 +16,13 @@
                 <div class="buttons">
                     <a href="reservation.html" class="btn">Réservation</a>
                     <a href="commander.html" class="btn">À emporter</a>
-
                 </div>
                 <div class="infos">
-                    <p>📍 <strong>Adresse :</strong><br>25 Quai des Queyries<br>33100 Bordeaux</p>
-                    <p>🕒 <strong>Horaires :</strong></p>
+                    <p>📍 <strong> </strong><br>25 Quai des Queyries<br>33100 Bordeaux</p>
+                    <p>📞 <strong> :</strong> 06 84 48 02 45</p>
+                    <p>🕒 <strong>Horaires d'ouverture :</strong></p>
                     <p><strong>Lundi au Vendredi :</strong> 12h00 - 14h30 et 19h00 - 22h30</p>
                     <p><strong>Samedi :</strong> 12h00 - 15h00 et 19h00 - 23h00</p>
-                    <!-- Horaires disponibles injectés ici via JS -->
                 </div>
             </div>
         </section>
@@ -37,7 +36,7 @@
         // Fonction pour récupérer les horaires disponibles via l'API
         async function fetchHoraires() {
             try {
-                const response = await fetch('http://127.0.0.1:5000/horaires-disponibles?date=2025-02-20');  // je remplace par la date que je veux tester
+                const response = await fetch('http://127.0.0.1:5000/horaires-disponibles?date=2025-02-20');  
                 const data = await response.json();
                 
                 if (data.horaires_disponibles && data.horaires_disponibles.length > 0) {
